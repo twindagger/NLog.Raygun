@@ -1,5 +1,5 @@
 ﻿using System;
-using NLog.Config;
+using NLog;
 
 namespace NLog.Raygun.TestApp
 {
@@ -7,8 +7,6 @@ namespace NLog.Raygun.TestApp
     {
         static void Main(string[] args)
         {
-            ConfigurationItemFactory.Default.Targets.RegisterDefinition("RayGun", typeof(RayGunTarget));
-            LogManager.ReconfigExistingLoggers();
             var logger = LogManager.GetCurrentClassLogger();
 
             Console.WriteLine("Sending Message to RayGun...");
@@ -21,7 +19,7 @@ namespace NLog.Raygun.TestApp
             }
             catch (Exception exception)
             {
-                logger.Error(exception);
+                logger.Error("Test Error", exception);
             }
 
             Console.WriteLine("Finished...");

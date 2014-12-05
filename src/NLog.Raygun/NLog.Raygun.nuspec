@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Ken Burkhardt</authors>
+    <owners>Ken Burkhardt</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>NLog target for RayGun</description>
+    <copyright>Copyright Ken Burkhardt 2014</copyright>
+  </metadata>
+</package>

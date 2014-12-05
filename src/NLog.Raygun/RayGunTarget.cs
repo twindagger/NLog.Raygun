@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using Mindscape.Raygun4Net;
+using Mindscape.Raygun4Net.Messages;
 using NLog.Config;
 using NLog.Targets;
 
@@ -28,13 +31,20 @@ namespace NLog.Raygun
 
         protected override void Write(LogEventInfo logEvent)
         {
-            var logMessage = Layout.Render(logEvent);
-
-            var exception = new RaygunException(logMessage, logEvent.Exception);
-
+            string logMessage = Layout.Render(logEvent);
+            
             var client = CreateRaygunClient();
-
-            SendMessage(client, exception);
+            client.Send(RaygunMessageBuilder.New
+              .SetEnvironmentDetails()
+              .SetMachineName(Environment.MachineName)
+              .SetExceptionDetails(logEvent.Exception ?? logEvent.Parameters[0] as Exception)
+              .SetClientDetails()
+              .SetTags(SplitValues(Tags))
+              .SetUserCustomData(new Dictionary<string, string>
+              {
+                  {"logMessage", logMessage}
+              })
+              .Build());
         }
 
         private RaygunClient CreateRaygunClient()
@@ -47,19 +57,6 @@ namespace NLog.Raygun
             client.IgnoreServerVariableNames(SplitValues(IgnoreServerVariableNames));
 
             return client;
-        }
-
-        private void SendMessage(RaygunClient client, Exception exception)
-        {
-            if (!string.IsNullOrWhiteSpace(Tags))
-            {
-                var tags = Tags.Split(',');
-                client.SendInBackground(exception, tags);
-            }
-            else
-            {
-                client.SendInBackground(exception);
-            }
         }
 
         private string[] SplitValues(string input)
